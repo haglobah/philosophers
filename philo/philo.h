@@ -49,7 +49,7 @@ typedef struct s_philorow
 
 typedef struct s_timetable
 {
-	t_philorows	*philorow;
+	t_philorow	*philorow;
 }	t_tt;
 
 typedef struct s_philosopher_init_data
@@ -69,9 +69,13 @@ typedef struct s_philo_struct
 t_phi	*mk_phi(t_args n);
 void	del_phi(t_phi *p);
 
-
+t_phi	*parse(int argc, char *argv[]);
 bool	parse_num3(const char *s, int *loc, bool is_num_philos);
 bool	parse_num2(const char *s, int *loc);
+bool	ft_parse_int(const char *s, int *loc);
 void	*rerror(char *msg);
+
+int	ft_strlen(char *s);
+void	run_tests(void);
 
 #endif

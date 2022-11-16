@@ -1,3 +1,15 @@
+#******************************************************************************#
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: bhagenlo <bhagenlo@student.42heil...>      +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2022/11/16 20:51:59 by bhagenlo          #+#    #+#              #
+#    Updated: 2022/11/16 20:51:59 by bhagenlo         ###   ########.fr        #
+#                                                                              #
+#******************************************************************************#
+
 NAME := philo
 
 SRCS := philos.c utils.c
@@ -9,14 +21,14 @@ TOBJS := $(TESTS:.c=.o)
 TEST := $(NAME)_test
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror # -I../LeakSanitizer/include -L../LeakSanitizer -llsan -lc++
+CFLAGS := -Wall -Wextra # -Werror # -I../LeakSanitizer/include -L../LeakSanitizer -llsan -lc++
 
 RM := rm -rf
 
 all : $(NAME)
 
 $(NAME) : $(MAIN) $(SRCS) Makefile $(NAME).h
-	$(CC) $(CFLAGS) $(SRCS) -lpthread -o $(NAME)
+	$(CC) $(CFLAGS) $(MAIN) $(SRCS) -lpthread -o $(NAME)
 
 clean :
 	@$(RM) $(OBJS) $(MO) $(TOBJS)
@@ -30,7 +42,8 @@ re : fclean
 run : all
 	./$(NAME)
 
-lsan : CFLAGS += -I../LeakSanitizer/include -L../LeakSanitizer -llsan -lc++
+lsan : CFLAGS = -I../LeakSanitizer/include -L../LeakSanitizer -llsan -lc++
+lsan :
 	$(MAKE) all
 	./$(NAME)
 

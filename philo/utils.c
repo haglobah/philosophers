@@ -12,6 +12,11 @@
 
 #include "philo.h"
 
+bool	ft_isdigit(char c)
+{
+	return (c >= '0' && c <= '9');
+}
+
 bool	ft_parse_int(const char *s, int *loc)
 {
 	int	i;
@@ -29,7 +34,7 @@ bool	ft_parse_int(const char *s, int *loc)
 			return (false);
 		i++;
 	}
-	*loc = (int)(num * ((2 * neg) - 1));
+	*loc = (int)(num * -((2 * neg) - 1));
 	return (i > neg && s[i] == '\0');
 }
 
@@ -46,15 +51,15 @@ bool	parse_num3(const char *s, int *loc, bool is_num_philos)
 
 bool	parse_num2(const char *s, int *loc)
 {
-	parse_num3(s, loc, false);
+	return (parse_num3(s, loc, false));
 }
 
 int	ft_strlen(char *s)
 {
 	int	i;
 
-	i = -i;
-	while (s[++i] != NULL)
+	i = 0;
+	while (s[i++])
 		;
 	return (i);
 }
