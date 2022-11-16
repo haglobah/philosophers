@@ -1,6 +1,6 @@
 NAME := philo
 
-SRCS := 
+SRCS := philos.c utils.c
 MAIN := main.c
 OBJS := $(SRCS:.c=.o)
 MO := main.o
@@ -16,7 +16,7 @@ RM := rm -rf
 all : $(NAME)
 
 $(NAME) : $(MAIN) $(SRCS) Makefile $(NAME).h
-	$(CC) $(CFLAGS) $(SRCS) $(LFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(SRCS) -lpthread -o $(NAME)
 
 clean :
 	@$(RM) $(OBJS) $(MO) $(TOBJS)
