@@ -1,23 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bhagenlo <bhagenlo@student.42heil...>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/16 10:26:38 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/16 10:26:38 by bhagenlo         ###   ########.fr       */
+/*   Created: 2022/11/17 11:39:19 by bhagenlo          #+#    #+#             */
+/*   Updated: 2022/11/17 11:39:19 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-
-int	main(int argc, char *argv[])
+void	run_philos(t_phi *p)
 {
-	t_phi	*p;
-
-	p = parse(argc, argv);
-	run_philos(p);
-	return (0);
+	return ;
 }

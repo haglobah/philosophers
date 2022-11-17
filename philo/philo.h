@@ -27,6 +27,14 @@
 # define PHILOS -9
 # define TIMETABLE -8
 
+# define EATING 3
+# define SLEEPING 4
+# define THINKING 5
+
+# define EST 6
+# define STE 7
+# define TES 8
+
 typedef struct s_arguments
 {
 	int	philos;
@@ -38,31 +46,32 @@ typedef struct s_arguments
 
 typedef struct s_time_status
 {
-	int	ms;
-	char	*status;
-}	t_time_status;
+	int	dur;
+	int	status;
+	/* char	stat[5]; */
+}	t_ts;
 
-typedef struct s_philorow
-{
-	t_time_status	*ts;
-}	t_philorow;
+/* typedef struct s_philorow */
+/* { */
+/* 	t_time_status	*ts; */
+/* }	t_philorow; */
 
-typedef struct s_timetable
-{
-	t_philorow	*philorow;
-}	t_tt;
+/* typedef struct s_timetable */
+/* { */
+/* 	t_ts	bla[3]; */
+/* }	t_tt; */
 
 typedef struct s_philosopher_init_data
 {
 	int	id;
-	t_tt	*t;
+	t_ts	**ts;
 } t_pdata;
 
 typedef struct s_philo_struct
 {
 	t_pdata	*phi;
 	pthread_mutex_t	*forks;
-	t_tt	*timetable;
+	t_ts	timetable[3][3];
 	t_args	n;
 }	t_phi;
 
@@ -74,6 +83,8 @@ bool	parse_num3(const char *s, int *loc, bool is_num_philos);
 bool	parse_num2(const char *s, int *loc);
 bool	ft_parse_int(const char *s, int *loc);
 void	*rerror(char *msg);
+
+void	run_philos(t_phi *p);
 
 int	ft_strlen(char *s);
 void	run_tests(void);
