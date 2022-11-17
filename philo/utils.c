@@ -72,6 +72,12 @@ void	printe(char *msg)
 void	*rerror(char *msg)
 {
 	printe(msg);
+	return (NULL);
+}
+
+void	*rerrorm(char *msg)
+{
+	printe(msg);
 	printe("The correct usage is: \n");
 	printe("    ./philo #philos die_time eat_time sleep_time [times_must_eat]\n\n");
 	return (NULL);

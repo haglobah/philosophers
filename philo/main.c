@@ -19,5 +19,6 @@ int	main(int argc, char *argv[])
 
 	p = parse(argc, argv);
 	run_philos(p);
+	free_n_destroy(p);
 	return (0);
 }

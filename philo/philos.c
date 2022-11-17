@@ -26,7 +26,11 @@ void	*free_n_destroy(t_phi *p, int died_while, int i)
 	{
 		
 	}
-	return (NULL);
+	else
+	{
+		
+	}
+	return (rerror("Allocation of philo failed"));
 }
 
 t_pdata	*mk_philo(t_phi *p, int id)
@@ -34,8 +38,11 @@ t_pdata	*mk_philo(t_phi *p, int id)
 	t_pdata	*phi;
 
 	phi = malloc(sizeof(t_pdata) * 1);
+	if (phi == NULL)
+		return (NULL);
 	phi->id = id;
 	phi->ts = p->timetable;
+	phi->forks = p->forks;
 	return (phi);
 }
 
@@ -45,12 +52,13 @@ t_pdata	**mk_philos(t_phi *p, t_args n)
 	int	i;
 
 	i = -1;
-	philos = malloc(sizeof(t_pdata) * n.philos);
+	philos = malloc(sizeof(t_pdata *) * n.philos);
 	if (philos == NULL)
 		return (rerror("Allocation of philos failed."));
 	while (++i < n.philos)
 	{
 		philos[i] = mk_philo(p, i);
+		printf("i: %i, id: %i\n", i, philos[i]->id);
 		if (philos[i] == NULL)
 			return (free_n_destroy(p, PHILOS, i));
 	}
@@ -146,6 +154,16 @@ t_phi	*mk_phi(t_args n)
 	return (p);
 }
 
+void	print_philos(t_phi *p)
+{
+	int	i;
+
+	i = -1;
+	while (++i < p->n.philos)
+	{
+		printf("Philo %i is there.\n", p->phi[i]->id);
+	}
+}
 
 t_phi	*parse(int argc, char *argv[])
 {
@@ -157,15 +175,15 @@ t_phi	*parse(int argc, char *argv[])
 		return (NULL);
 	}
 	if (parse_num3(argv[1], &n.philos, true) == false)
-		return (rerror("number_of_philosophers invalid\n"));
+		return (rerrorm("number_of_philosophers invalid\n"));
 	if (parse_num2(argv[2], &n.time_to_die) == false)
-		return (rerror("time_to_die invalid\n"));
+		return (rerrorm("time_to_die invalid\n"));
 	if (parse_num2(argv[3], &n.time_to_eat) == false)
-		return (rerror("time_to_eat invalid\n"));
+		return (rerrorm("time_to_eat invalid\n"));
 	if (parse_num2(argv[4], &n.time_to_sleep) == false)
-		return (rerror("time_to_sleep invalid\n"));
+		return (rerrorm("time_to_sleep invalid\n"));
 	if (argc == 6 && (parse_num2(argv[5], &n.times_must_eat) == false))
-		return (rerror("times_must_eat invalid\n"));
+		return (rerrorm("times_must_eat invalid\n"));
 
 	return (mk_phi(n));
 }

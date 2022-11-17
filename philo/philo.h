@@ -35,6 +35,8 @@
 # define STE 7
 # define TES 8
 
+typedef struct timeval	t_tv;
+
 typedef struct s_arguments
 {
 	int	philos;
@@ -65,11 +67,12 @@ typedef struct s_philosopher_init_data
 {
 	int	id;
 	t_ts	**ts;
+	pthread_mutex_t	*forks;
 } t_pdata;
 
 typedef struct s_philo_struct
 {
-	t_pdata	*phi;
+	t_pdata	**phi;
 	pthread_mutex_t	*forks;
 	t_ts	timetable[3][3];
 	t_args	n;
@@ -82,9 +85,12 @@ t_phi	*parse(int argc, char *argv[]);
 bool	parse_num3(const char *s, int *loc, bool is_num_philos);
 bool	parse_num2(const char *s, int *loc);
 bool	ft_parse_int(const char *s, int *loc);
-void	*rerror(char *msg);
 
-void	run_philos(t_phi *p);
+void	*rerror(char *msg);
+void	*rerrorm(char *msg);
+
+void	*run_philos(t_phi *p);
+void	print_philos(t_phi *p);
 
 int	ft_strlen(char *s);
 void	run_tests(void);
