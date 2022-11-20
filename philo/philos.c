@@ -41,7 +41,7 @@ t_pdata	*mk_philo(t_phi *p, int id)
 	if (phi == NULL)
 		return (NULL);
 	phi->id = id;
-	/* phi->ts = p->timetabl e*/;
+	/* phi->ts = p->tt*/;
 	phi->forks = p->forks;
 	phi->n = &p->n;
 	return (phi);
@@ -85,35 +85,38 @@ pthread_mutex_t	*mk_forks(t_phi *p, t_args n)
 
 void	populate_even(t_phi *p, t_args n)
 {
-	p->timetable[0][0] = (t_ts){n.time_to_eat * 1e3, EATING};
-	p->timetable[0][1] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
-	p->timetable[0][2] = (t_ts){1, THINKING};
-	p->timetable[1][0] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
-	p->timetable[1][1] = (t_ts){1, THINKING};
-	p->timetable[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
+	p->tt[0][0] = (t_ts){n.time_to_eat * 1e3, EATING};
+	p->tt[0][1] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
+	p->tt[0][2] = (t_ts){1, THINKING};
+
+	p->tt[1][0] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
+	p->tt[1][1] = (t_ts){1, THINKING};
+	p->tt[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
 }
 
 void	populate_odd(t_phi *p, t_args n)
 {
-	p->timetable[0][0] = (t_ts){n.time_to_eat * 1e3, EATING};
-	p->timetable[0][1] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
-	p->timetable[0][2] = (t_ts){1, THINKING};
-	p->timetable[1][0] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
-	p->timetable[1][1] = (t_ts){1, THINKING};
-	p->timetable[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
-	p->timetable[2][0] = (t_ts){1, THINKING};
-	p->timetable[2][1] = (t_ts){n.time_to_eat * 1e3, EATING};
-	p->timetable[2][2] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
+	p->tt[0][0] = (t_ts){n.time_to_eat * 1e3, EATING};
+	p->tt[0][1] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
+	p->tt[0][2] = (t_ts){1, THINKING};
+
+	p->tt[1][0] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
+	p->tt[1][1] = (t_ts){1, THINKING};
+	p->tt[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
+
+	p->tt[2][0] = (t_ts){1, THINKING};
+	p->tt[2][1] = (t_ts){n.time_to_eat * 1e3, EATING};
+	p->tt[2][2] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
 }
 
 int	get_dur(t_phi *p, int philo, int slot)
 {
-	return (p->timetable[philo][slot].dur);
+	return (p->tt[philo][slot].dur);
 }
 
 int	get_st(t_phi *p, int philo, int slot)
 {
-	return (p->timetable[philo][slot].status);
+	return (p->tt[philo][slot].status);
 }
 
 void	print_tt(t_phi *p)
@@ -133,14 +136,13 @@ void	print_tt(t_phi *p)
 	}
 }
 
-void	populate_timetable(t_phi *p, t_args n)
+void	populate_tt(t_phi *p, t_args n)
 {
 
 	if ((n.philos % 2) == 0)
 		populate_even(p, n);
 	else
 		populate_odd(p, n);
-	print_tt(p);
 }
 
 t_phi	*mk_phis(t_args n)
@@ -153,10 +155,11 @@ t_phi	*mk_phis(t_args n)
 	while (++i < n.philos)
 	{
 		p[i].forks = mk_forks(&p[i], n);
-		populate_timetable(&p[i], n);
+		populate_tt(&p[i], n);
 		p[i].id = i;
 		p[i].n = n;
 	}
+	print_tt(p);
 	return (p);
 }
 

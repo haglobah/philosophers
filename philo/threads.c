@@ -37,18 +37,18 @@ int	transition(t_phi *p, int *state, int time_passed, int curr_slot)
 	{
 		//unlock_forks(p);
 		*state = SLEEPING;
-		printf("%i %i is sleeping\n", time_passed, p->id);
+		printf("%i %i is sleeping\n", time_passed / 1000, p->id);
 	}
 	else if (*state == SLEEPING)
 	{
 		*state = THINKING;
-		printf("%i %i is thinking\n", time_passed, p->id);
+		printf("%i %i is thinking\n", time_passed / 1000, p->id);
 	}
 	else if (*state == THINKING)
 	{
 		//acquire_forks(p);
 		*state = EATING;
-		printf("%i %i is eating\n", time_passed, p->id);
+		printf("%i %i is eating\n", time_passed / 1000, p->id);
 	}
 	return (curr_slot < 2 ? curr_slot + 1 : 0);
 }
@@ -70,14 +70,14 @@ int	get_status(t_phi *p, int slot)
 	int	status;
 
 	mod_id = get_idm(p);
-	printf("mod_id of %i: %i\n", p->id, mod_id);
-	status = p->timetable[mod_id][slot].status;
+	/* printf("mod_id of %i: %i\n", p->id, mod_id); */
+	status = p->tt[mod_id][slot].status;
 	return (status);
 }
 
 t_time	get_tasklen(t_phi *p, int slot)
 {
-	return (p->timetable[get_idm(p)][slot].dur);
+	return (p->tt[get_idm(p)][slot].dur);
 }
 
 bool	switch_needed(t_phi *p, t_time last_switch, t_time time_passed, int curr_slot)
@@ -95,32 +95,24 @@ bool	times_ate_reached();
 
 void	go(t_phi *p)
 {
-	printf("Hi! I am Philo %i\n", p->id);
-
 	t_time	start;
-	t_time	curr;
 	int	state;
 	int	curr_slot;
 	t_time	time_passed;
 	t_time	last_switch;
 
 	start = get_ts();
-	state = get_status(p, 0);
-	curr_slot = 0;
+	state = get_status(p, 2);
+	curr_slot = transition(p, &state, 0, 2);
 	last_switch = 0;
-	int i = 10;
 	while (true)
 	{
-		curr = get_ts();
-		time_passed = curr - start;
-		//	printf("%i – since start: %lli\n", p->id, time_passed);
+		time_passed = get_ts() - start;
 		if (switch_needed(p, last_switch, time_passed, curr_slot))
 		{
-			printf("Switch needed!\n");
 			curr_slot = transition(p, &state, time_passed, curr_slot);
-			last_switch = get_ts();
+			last_switch = get_ts() - start;
 		}
-		usleep(100);
 		//busy_sleep?
 		/* if (times_ate_reached()) */
 		/* { */
