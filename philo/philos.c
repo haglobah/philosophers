@@ -16,7 +16,7 @@ void	*free_n_destroy(t_phi *p, int died_while, int i)
 {
 	if (died_while == FORKS)
 	{
-		
+		(void)p;
 	}
 	else if (died_while == PHILOS)
 	{
@@ -24,13 +24,13 @@ void	*free_n_destroy(t_phi *p, int died_while, int i)
 	}
 	else if (died_while == TIMETABLE)
 	{
-		
+		(void)i;
 	}
 	else
 	{
 		
 	}
-	return (rerror("Allocation of philo failed"));
+	return (rerror("What happened here?\n"));
 }
 
 t_pdata	*mk_philo(t_phi *p, int id)
@@ -43,6 +43,7 @@ t_pdata	*mk_philo(t_phi *p, int id)
 	phi->id = id;
 	phi->ts = p->timetable;
 	phi->forks = p->forks;
+	phi->n = &p->n;
 	return (phi);
 }
 
@@ -145,8 +146,8 @@ void	populate_timetable(t_phi *p, t_args n)
 t_phi	*mk_phi(t_args n)
 {
 	t_phi	*p;
-	int	i;
 
+	p = malloc(sizeof(t_phi) * 1);
 	p->forks = mk_forks(p, n);
 	populate_timetable(p, n);
 	p->phi = mk_philos(p, n);
