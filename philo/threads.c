@@ -28,64 +28,63 @@ t_time get_ts()
 	t_tv	now;
 
 	gettimeofday(&now, NULL);
-	printf("Unix seconds: %li\n", now.tv_sec);
 	return (utc(now));
 }
 
-int	transition(t_pdata *d, int *state, int time_passed, int curr_slot)
+int	transition(t_phi *p, int *state, int time_passed, int curr_slot)
 {
 	if (*state == EATING)
 	{
 		//unlock_forks(p);
 		*state = SLEEPING;
-		printf("%i %i is sleeping\n", time_passed, d->id);
+		printf("%i %i is sleeping\n", time_passed, p->id);
 	}
 	else if (*state == SLEEPING)
 	{
 		*state = THINKING;
-		printf("%i %i is thinking\n", time_passed, d->id);
+		printf("%i %i is thinking\n", time_passed, p->id);
 	}
 	else if (*state == THINKING)
 	{
 		//acquire_forks(p);
 		*state = EATING;
-		printf("%i %i is eating\n", time_passed, d->id);
+		printf("%i %i is eating\n", time_passed, p->id);
 	}
 	return (curr_slot < 2 ? curr_slot + 1 : 0);
 }
 
-int	get_idm(t_pdata *d)
+int	get_idm(t_phi *p)
 {
 	int	mod;
 
-	if (d->n->philos % 2 == 0)
+	if (p->n.philos % 2 == 0)
 		mod = 2;
 	else
 		mod = 3;
-	return (d->id % mod);
+	return (p->id % mod);
 }
 
-int	get_status(t_pdata *d, int slot)
+int	get_status(t_phi *p, int slot)
 {
 	int	mod_id;
 	int	status;
 
-	mod_id = get_idm(d);
-	printf("mod_id of %i: %i\n", d->id, mod_id);
-	status = d->ts[mod_id][slot].status;
+	mod_id = get_idm(p);
+	printf("mod_id of %i: %i\n", p->id, mod_id);
+	status = p->timetable[mod_id][slot].status;
 	return (status);
 }
 
-t_time	get_tasklen(t_pdata *d, int slot)
+t_time	get_tasklen(t_phi *p, int slot)
 {
-	return (d->ts[get_idm(d)][slot].dur);
+	return (p->timetable[get_idm(p)][slot].dur);
 }
 
-bool	switch_needed(t_pdata *d, t_time last_switch, t_time time_passed, int curr_slot)
+bool	switch_needed(t_phi *p, t_time last_switch, t_time time_passed, int curr_slot)
 {
 	t_time	tasklen;
 
-	tasklen = get_tasklen(d, curr_slot);
+	tasklen = get_tasklen(p, curr_slot);
 	if (time_passed - last_switch >= tasklen)
 		return (true);
 	else
@@ -94,9 +93,9 @@ bool	switch_needed(t_pdata *d, t_time last_switch, t_time time_passed, int curr_
 
 bool	times_ate_reached();
 
-void	go(t_pdata *d)
+void	go(t_phi *p)
 {
-	printf("Hi! I am Philo %i\n", d->id);
+	printf("Hi! I am Philo %i\n", p->id);
 
 	t_time	start;
 	t_time	curr;
@@ -105,23 +104,23 @@ void	go(t_pdata *d)
 	t_time	time_passed;
 	t_time	last_switch;
 
-	printf("%i e.\n", d->id);
 	start = get_ts();
-	printf("%i ex.\n", d->id);
-	usleep(500);
-	state = get_status(d, 0);
-	printf("%i exi.\n", d->id);
+	state = get_status(p, 0);
 	curr_slot = 0;
 	last_switch = 0;
+	int i = 10;
 	while (true)
 	{
 		curr = get_ts();
 		time_passed = curr - start;
-		if (switch_needed(d, last_switch, time_passed, curr_slot))
+		//	printf("%i – since start: %lli\n", p->id, time_passed);
+		if (switch_needed(p, last_switch, time_passed, curr_slot))
 		{
-			curr_slot = transition(d, &state, time_passed, curr_slot);
+			printf("Switch needed!\n");
+			curr_slot = transition(p, &state, time_passed, curr_slot);
 			last_switch = get_ts();
 		}
+		usleep(100);
 		//busy_sleep?
 		/* if (times_ate_reached()) */
 		/* { */
@@ -143,7 +142,7 @@ void	*run_philos(t_phi *p)
 	i = -1;
 	while (++i < p->n.philos)
 	{
-		if (pthread_create(&t[i], NULL, (void *)go, p->phi[i]) != 0)
+		if (pthread_create(&t[i], NULL, (void *)go, &p[i]) != 0)
 			return (rerror("thread creation failed.\n"));
 	}
 	while (--i > 0)

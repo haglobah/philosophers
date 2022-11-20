@@ -41,7 +41,7 @@ t_pdata	*mk_philo(t_phi *p, int id)
 	if (phi == NULL)
 		return (NULL);
 	phi->id = id;
-	phi->ts = p->timetable;
+	/* phi->ts = p->timetabl e*/;
 	phi->forks = p->forks;
 	phi->n = &p->n;
 	return (phi);
@@ -85,25 +85,25 @@ pthread_mutex_t	*mk_forks(t_phi *p, t_args n)
 
 void	populate_even(t_phi *p, t_args n)
 {
-	p->timetable[0][0] = (t_ts){n.time_to_eat, EATING};
-	p->timetable[0][1] = (t_ts){n.time_to_sleep, SLEEPING};
+	p->timetable[0][0] = (t_ts){n.time_to_eat * 1e3, EATING};
+	p->timetable[0][1] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
 	p->timetable[0][2] = (t_ts){1, THINKING};
-	p->timetable[1][0] = (t_ts){n.time_to_sleep, SLEEPING};
+	p->timetable[1][0] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
 	p->timetable[1][1] = (t_ts){1, THINKING};
-	p->timetable[1][2] = (t_ts){n.time_to_eat, EATING};
+	p->timetable[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
 }
 
 void	populate_odd(t_phi *p, t_args n)
 {
-	p->timetable[0][0] = (t_ts){n.time_to_eat, EATING};
-	p->timetable[0][1] = (t_ts){n.time_to_sleep, SLEEPING};
+	p->timetable[0][0] = (t_ts){n.time_to_eat * 1e3, EATING};
+	p->timetable[0][1] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
 	p->timetable[0][2] = (t_ts){1, THINKING};
-	p->timetable[1][0] = (t_ts){n.time_to_sleep, SLEEPING};
+	p->timetable[1][0] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
 	p->timetable[1][1] = (t_ts){1, THINKING};
-	p->timetable[1][2] = (t_ts){n.time_to_eat, EATING};
+	p->timetable[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
 	p->timetable[2][0] = (t_ts){1, THINKING};
-	p->timetable[2][1] = (t_ts){n.time_to_eat, EATING};
-	p->timetable[2][2] = (t_ts){n.time_to_sleep, SLEEPING};
+	p->timetable[2][1] = (t_ts){n.time_to_eat * 1e3, EATING};
+	p->timetable[2][2] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
 }
 
 int	get_dur(t_phi *p, int philo, int slot)
@@ -143,15 +143,20 @@ void	populate_timetable(t_phi *p, t_args n)
 	print_tt(p);
 }
 
-t_phi	*mk_phi(t_args n)
+t_phi	*mk_phis(t_args n)
 {
 	t_phi	*p;
+	int	i;
 
-	p = malloc(sizeof(t_phi) * 1);
-	p->forks = mk_forks(p, n);
-	populate_timetable(p, n);
-	p->phi = mk_philos(p, n);
-	p->n = n;
+	p = malloc(sizeof(t_phi) * n.philos);
+	i = -1;
+	while (++i < n.philos)
+	{
+		p[i].forks = mk_forks(&p[i], n);
+		populate_timetable(&p[i], n);
+		p[i].id = i;
+		p[i].n = n;
+	}
 	return (p);
 }
 
@@ -159,10 +164,11 @@ void	print_philos(t_phi *p)
 {
 	int	i;
 
-	i = -1;
-	while (++i < p->n.philos)
+	i = 0;
+	while (i < p[i].n.philos)
 	{
-		printf("Philo %i is there.\n", p->phi[i]->id);
+		printf("Philo %i is there.\n", p[i].id);
+		i++;
 	}
 }
 
@@ -186,6 +192,6 @@ t_phi	*parse(int argc, char *argv[])
 	if (argc == 6 && (parse_num2(argv[5], &n.times_must_eat) == false))
 		return (rerrorm("times_must_eat invalid\n"));
 
-	return (mk_phi(n));
+	return (mk_phis(n));
 }
 

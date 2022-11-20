@@ -85,7 +85,7 @@ typedef struct s_philosopher_init_data
 
 typedef struct s_philo_struct
 {
-	t_pdata	**phi;
+	int	id;
 	pthread_mutex_t	*forks;
 	t_ts	timetable[3][3];
 	t_args	n;
