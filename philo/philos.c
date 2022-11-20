@@ -148,13 +148,15 @@ void	populate_tt(t_phi *p, t_args n)
 t_phi	*mk_phis(t_args n)
 {
 	t_phi	*p;
+	t_fork	*forks;
 	int	i;
 
 	p = malloc(sizeof(t_phi) * n.philos);
+	forks = mk_forks(p, n);
 	i = -1;
 	while (++i < n.philos)
 	{
-		p[i].forks = mk_forks(&p[i], n);
+		p[i].forks = forks;
 		populate_tt(&p[i], n);
 		p[i].id = i;
 		p[i].n = n;

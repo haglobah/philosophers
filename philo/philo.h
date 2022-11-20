@@ -48,6 +48,7 @@
 
 typedef struct timeval	t_tv;
 typedef long long t_time;
+typedef pthread_mutex_t t_fork;
 
 typedef struct s_arguments
 {

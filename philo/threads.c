@@ -31,24 +31,62 @@ t_time get_ts()
 	return (utc(now));
 }
 
-int	transition(t_phi *p, int *state, int time_passed, int curr_slot)
+void	printp(t_time now, t_phi *p, char *s)
+{
+	printf("%lli %i %s\n", now / 1000, p->id, s);
+}
+
+void	unlock(t_phi *p, int fork_id)
+{
+	pthread_mutex_unlock(&p->forks[fork_id]);
+}
+
+void	lock(t_phi *p, int fork_id)
+{
+	pthread_mutex_lock(&p->forks[fork_id]);
+}
+
+
+void	place_forks(t_phi *p)
+{
+	int	left;
+	int	right;
+
+	left = p->id;
+	right = (p->id == 0) ? p->n.philos - 1 : p->id - 1;
+	unlock(p, left);
+	unlock(p, right);
+}
+
+void	acquire_forks(t_phi *p)
+{
+	int	left;
+	int	right;
+
+	left = p->id;
+	right = (p->id == 0) ? p->n.philos - 1 : p->id - 1;
+	lock(p, right);
+	lock(p, left);
+}
+
+int	transition(t_phi *p, int *state, t_time time_passed, int curr_slot)
 {
 	if (*state == EATING)
 	{
-		//unlock_forks(p);
+		place_forks(p);
 		*state = SLEEPING;
-		printf("%i %i is sleeping\n", time_passed / 1000, p->id);
+		printp(time_passed, p, "is sleeping");
 	}
 	else if (*state == SLEEPING)
 	{
 		*state = THINKING;
-		printf("%i %i is thinking\n", time_passed / 1000, p->id);
+		printp(time_passed, p, "is thinking");
 	}
 	else if (*state == THINKING)
 	{
-		//acquire_forks(p);
+		acquire_forks(p);
 		*state = EATING;
-		printf("%i %i is eating\n", time_passed / 1000, p->id);
+		printp(time_passed, p, "is eating");
 	}
 	return (curr_slot < 2 ? curr_slot + 1 : 0);
 }
@@ -93,6 +131,13 @@ bool	switch_needed(t_phi *p, t_time last_switch, t_time time_passed, int curr_sl
 
 bool	times_ate_reached();
 
+bool	check_death(t_phi *p, t_time time_passed, t_time ate_last_time)
+{
+	if (time_passed - ate_last_time >= p->n.time_to_die * 1000)
+		return (true);
+	return (false);
+}
+
 void	go(t_phi *p)
 {
 	t_time	start;
@@ -100,18 +145,25 @@ void	go(t_phi *p)
 	int	curr_slot;
 	t_time	time_passed;
 	t_time	last_switch;
+	t_time	ate_last_time;
 
 	start = get_ts();
 	state = get_status(p, 2);
 	curr_slot = transition(p, &state, 0, 2);
 	last_switch = 0;
+	ate_last_time = 0;
 	while (true)
 	{
 		time_passed = get_ts() - start;
+		if (check_death(p, time_passed, ate_last_time))
+			return (printp(time_passed, p, "has died"));
 		if (switch_needed(p, last_switch, time_passed, curr_slot))
 		{
 			curr_slot = transition(p, &state, time_passed, curr_slot);
 			last_switch = get_ts() - start;
+			if (state == SLEEPING)
+				ate_last_time = get_ts() - start;
+			/* printp(ate_last_time, p, "ate_last_time"); */
 		}
 		//busy_sleep?
 		/* if (times_ate_reached()) */
