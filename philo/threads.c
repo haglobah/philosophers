@@ -31,9 +31,16 @@ t_time get_ts()
 	return (utc(now));
 }
 
+t_time get_µs(t_time start)
+{
+	return (get_ts() - start);
+}
+
 void	printp(t_time now, t_phi *p, char *s)
 {
+	pthread_mutex_lock(p->write);
 	printf("%lli %i %s\n", now / 1000, p->id, s);
+	pthread_mutex_unlock(p->write);
 }
 
 void	unlock(t_phi *p, int fork_id)
@@ -58,7 +65,7 @@ void	place_forks(t_phi *p)
 	unlock(p, right);
 }
 
-void	acquire_forks(t_phi *p)
+void	acquire_forks(t_phi *p, t_time time_passed)
 {
 	int	left;
 	int	right;
@@ -66,7 +73,9 @@ void	acquire_forks(t_phi *p)
 	left = p->id;
 	right = (p->id == 0) ? p->n.philos - 1 : p->id - 1;
 	lock(p, right);
+	printp(time_passed, p, "has taken a fork");
 	lock(p, left);
+	printp(time_passed, p, "has taken a fork");
 }
 
 int	transition(t_phi *p, int *state, t_time time_passed, int curr_slot)
@@ -84,7 +93,7 @@ int	transition(t_phi *p, int *state, t_time time_passed, int curr_slot)
 	}
 	else if (*state == THINKING)
 	{
-		acquire_forks(p);
+		acquire_forks(p, time_passed);
 		*state = EATING;
 		printp(time_passed, p, "is eating");
 	}
@@ -156,7 +165,7 @@ void	go(t_phi *p)
 	{
 		time_passed = get_ts() - start;
 		if (check_death(p, time_passed, ate_last_time))
-			return (printp(time_passed, p, "has died"));
+			return (printp(time_passed, p, "died"));
 		if (switch_needed(p, last_switch, time_passed, curr_slot))
 		{
 			curr_slot = transition(p, &state, time_passed, curr_slot);

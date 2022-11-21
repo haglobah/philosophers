@@ -33,38 +33,38 @@ void	*free_n_destroy(t_phi *p, int died_while, int i)
 	return (rerror("What happened here?\n"));
 }
 
-t_pdata	*mk_philo(t_phi *p, int id)
-{
-	t_pdata	*phi;
+/* t_pdata	*mk_philo(t_phi *p, int id) */
+/* { */
+/* 	t_pdata	*phi; */
 
-	phi = malloc(sizeof(t_pdata) * 1);
-	if (phi == NULL)
-		return (NULL);
-	phi->id = id;
-	/* phi->ts = p->tt*/;
-	phi->forks = p->forks;
-	phi->n = &p->n;
-	return (phi);
-}
+/* 	phi = malloc(sizeof(t_pdata) * 1); */
+/* 	if (phi == NULL) */
+/* 		return (NULL); */
+/* 	phi->id = id; */
+/* 	/\* phi->ts = p->tt*\/; */
+/* 	phi->forks = p->forks; */
+/* 	phi->n = &p->n; */
+/* 	return (phi); */
+/* } */
 
-t_pdata	**mk_philos(t_phi *p, t_args n)
-{
-	t_pdata	**philos;
-	int	i;
+/* t_pdata	**mk_philos(t_phi *p, t_args n) */
+/* { */
+/* 	t_pdata	**philos; */
+/* 	int	i; */
 
-	i = -1;
-	philos = malloc(sizeof(t_pdata *) * n.philos);
-	if (philos == NULL)
-		return (rerror("Allocation of philos failed."));
-	while (++i < n.philos)
-	{
-		philos[i] = mk_philo(p, i);
-		printf("i: %i, id: %i\n", i, philos[i]->id);
-		if (philos[i] == NULL)
-			return (free_n_destroy(p, PHILOS, i));
-	}
-	return (philos);
-}
+/* 	i = -1; */
+/* 	philos = malloc(sizeof(t_pdata *) * n.philos); */
+/* 	if (philos == NULL) */
+/* 		return (rerror("Allocation of philos failed.")); */
+/* 	while (++i < n.philos) */
+/* 	{ */
+/* 		philos[i] = mk_philo(p, i); */
+/* 		printf("i: %i, id: %i\n", i, philos[i]->id); */
+/* 		if (philos[i] == NULL) */
+/* 			return (free_n_destroy(p, PHILOS, i)); */
+/* 	} */
+/* 	return (philos); */
+/* } */
 
 pthread_mutex_t	*mk_forks(t_phi *p, t_args n)
 {
@@ -148,15 +148,23 @@ void	populate_tt(t_phi *p, t_args n)
 t_phi	*mk_phis(t_args n)
 {
 	t_phi	*p;
-	t_fork	*forks;
+	t_mutex	*forks;
+	t_mutex	*write;
 	int	i;
 
 	p = malloc(sizeof(t_phi) * n.philos);
+	if (p == NULL)
+		return (NULL);
 	forks = mk_forks(p, n);
+	write = malloc(sizeof(t_mutex) * 1);
+	if (write == NULL)
+		return (NULL);
+	pthread_mutex_init(write, NULL);
 	i = -1;
 	while (++i < n.philos)
 	{
 		p[i].forks = forks;
+		p[i].write = write;
 		populate_tt(&p[i], n);
 		p[i].id = i;
 		p[i].n = n;

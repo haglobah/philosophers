@@ -48,7 +48,7 @@
 
 typedef struct timeval	t_tv;
 typedef long long t_time;
-typedef pthread_mutex_t t_fork;
+typedef pthread_mutex_t t_mutex;
 
 typedef struct s_arguments
 {
@@ -76,18 +76,19 @@ typedef struct s_time_status
 /* 	t_ts	bla[3]; */
 /* }	t_tt; */
 
-typedef struct s_philosopher_init_data
-{
-	int	id;
-	t_ts	**tt;
-	pthread_mutex_t	*forks;
-	t_args	*n;
-} t_pdata;
+/* typedef struct s_philosopher_init_data */
+/* { */
+/* 	int	id; */
+/* 	t_ts	**tt; */
+/* 	pthread_mutex_t	*forks; */
+/* 	t_args	*n; */
+/* } t_pdata; */
 
 typedef struct s_philo_struct
 {
 	int	id;
-	pthread_mutex_t	*forks;
+	t_mutex	*forks;
+	t_mutex	*write;
 	t_ts	tt[3][3];
 	t_args	n;
 }	t_phi;
