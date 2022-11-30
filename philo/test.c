@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 23:44:56 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:09:46 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:44:09 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	**mk_stra(int argc, ...)
 	while (i < argc)
 	{
 		char *str_to_add = va_arg(argp, char *);
-		res[i] = calloc(sizeof(char), ft_strlen(str_to_add) + 1);
+		res[i] = ft_calloc(sizeof(char), ft_strlen(str_to_add) + 1);
 		if (res[i] == NULL)
 			return (NULL);
 		res[i] = str_to_add;

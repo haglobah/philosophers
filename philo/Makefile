@@ -6,13 +6,14 @@
 #    By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/16 20:51:59 by bhagenlo          #+#    #+#              #
-#    Updated: 2022/11/30 20:07:40 by bhagenlo         ###   ########.fr        #
+#    Updated: 2022/11/30 20:45:43 by bhagenlo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := philo
 
-SRCS := philos.c utils.c threads.c time.c timetable.c parse.c
+SRCS := philos.c utils.c threads.c time.c timetable.c parse.c death.c forks.c \
+		go_helpers.c tt_helpers.c error.c
 MAIN := main.c
 OBJS := $(SRCS:.c=.o)
 MO := main.o

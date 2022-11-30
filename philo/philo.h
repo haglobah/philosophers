@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 17:16:04 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:08:36 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:46:12 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,16 +93,36 @@ t_mutex	*mk_forks(t_phi *p, t_args n);
 int		get_dur(t_phi *p, int philo, int slot);
 int		get_st(t_phi *p, int philo, int slot);
 
+//parse.c
 t_phi	*parse(int argc, char *argv[]);
 bool	parse_num3(const char *s, int *loc, bool is_num_philos);
 bool	parse_num2(const char *s, int *loc);
 bool	ft_parse_int(const char *s, int *loc);
 
+//error.c
 void	*rerror(char *msg);
 void	*rerrorm(char *msg);
 
 void	*run_philos(t_phi *p);
 void	print_philos(t_phi *p);
+
+//go_helpers.c
+int		get_idm(t_phi *p);
+int		get_status(t_phi *p, int slot);
+t_time	get_tasklen(t_phi *p, int slot);
+bool	switch_needed(t_phi *p, t_ps *ps);
+bool	times_ate_reached(t_phi *p, t_ps *ps);
+
+//death.c
+bool	is_sb_dead(t_phi *p);
+void	printp(t_phi *p, t_ps *ps, char *s);
+void	announce_death(t_phi *p, t_ps *ps);
+bool	should_die(t_phi *p, t_ps *ps);
+int		handle_death(t_phi *p, t_ps ps);
+
+//forks.c
+void	place_forks(t_phi *p);
+void	acquire_forks(t_phi *p, t_ps *ps);
 
 //time.c
 t_time	utc(t_tv time);
@@ -115,6 +135,12 @@ void	populate_odd(t_phi *p, t_args n);
 void	print_tt(t_phi *p);
 void	populate_tt(t_phi *p, t_args n);
 
+//tt_helpers.c
+int		get_dur(t_phi *p, int philo, int slot);
+int		get_st(t_phi *p, int philo, int slot);
+int		get_thinktime(t_args n);
+
+//utils.c
 int		ft_strlen(char *s);
 void	run_tests(void);
 void	*ft_calloc(int count, int size);

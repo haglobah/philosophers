@@ -1,48 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/16 17:29:03 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:45:19 by bhagenlo         ###   ########.fr       */
+/*   Created: 2022/11/30 20:44:57 by bhagenlo          #+#    #+#             */
+/*   Updated: 2022/11/30 20:45:24 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_strlen(char *s)
+void	printe(char *msg)
 {
-	int	i;
-
-	i = 0;
-	while (s[i++])
-		;
-	return (i);
+	write(2, msg, ft_strlen(msg));
 }
 
-void	*ft_memset(void *str, int c, size_t len)
+void	*rerror(char *msg)
 {
-	unsigned char	*res;
-
-	res = (unsigned char *) str;
-	while (len)
-	{
-		*res = (unsigned char)c;
-		res++;
-		len--;
-	}
-	return (str);
+	printe(msg);
+	return (NULL);
 }
 
-void	*ft_calloc(int count, int size)
+void	*rerrorm(char *msg)
 {
-	void	*ptr;
-
-	ptr = malloc(count * size);
-	if (ptr == NULL)
-		return (NULL);
-	ft_memset(ptr, 0, count * size);
-	return (ptr);
+	printe(msg);
+	printe("The correct usage is: \n");
+	printe("    ./philo #philos die_time eat_time sleep_time [#must_eat]\n\n");
+	return (NULL);
 }
