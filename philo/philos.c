@@ -3,34 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   philos.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bhagenlo <bhagenlo@student.42heil...>      +#+  +:+       +#+        */
+/*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 23:54:44 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/16 23:54:44 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 16:49:08 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*free_n_destroy(t_phi *p, int died_while, int i)
+void	*free_n_destroy(t_phi *p)
 {
-	if (died_while == FORKS)
-	{
-		(void)p;
-	}
-	else if (died_while == PHILOS)
-	{
-		
-	}
-	else if (died_while == TIMETABLE)
-	{
-		(void)i;
-	}
-	else
-	{
-		
-	}
-	return (rerror("What happened here?\n"));
+	del_phis(p);
+	return (rerror("Allocation of a fork failed.\n"));
 }
 
 /* t_pdata	*mk_philo(t_phi *p, int id) */
@@ -72,13 +57,13 @@ pthread_mutex_t	*mk_forks(t_phi *p, t_args n)
 	int	i;
 
 	i = -1;
-	forks = malloc(sizeof(pthread_mutex_t) * n.philos);
+	forks = ft_calloc(n.philos + 1, sizeof(pthread_mutex_t));
 	if (forks == NULL)
 		return (rerror("Allocation of forks failed."));
 	while (++i < n.philos)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) != 0)
-			return (free_n_destroy(p, FORKS, i));
+			return (free_n_destroy(p));
 	}
 	return (forks);
 }
@@ -94,17 +79,37 @@ void	populate_even(t_phi *p, t_args n)
 	p->tt[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
 }
 
+int	get_thinktime(t_args n)
+{
+	int	think_time;
+	int	longer;
+	int	shorter;
+
+	if (n.time_to_sleep > n.time_to_eat)
+	{
+		longer = n.time_to_sleep;
+		shorter = n.time_to_eat;
+	}
+	else
+	{
+		longer = n.time_to_sleep;
+		shorter = n.time_to_eat;
+	}
+	think_time = longer * 2 - shorter;
+	return (think_time);
+}
+
 void	populate_odd(t_phi *p, t_args n)
 {
 	p->tt[0][0] = (t_ts){n.time_to_eat * 1e3, EATING};
 	p->tt[0][1] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
-	p->tt[0][2] = (t_ts){1, THINKING};
+	p->tt[0][2] = (t_ts){get_thinktime(n) * 1e3, THINKING};
 
 	p->tt[1][0] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
-	p->tt[1][1] = (t_ts){1, THINKING};
+	p->tt[1][1] = (t_ts){get_thinktime(n) * 1e3, THINKING};
 	p->tt[1][2] = (t_ts){n.time_to_eat * 1e3, EATING};
 
-	p->tt[2][0] = (t_ts){1, THINKING};
+	p->tt[2][0] = (t_ts){get_thinktime(n) * 1e3, THINKING};
 	p->tt[2][1] = (t_ts){n.time_to_eat * 1e3, EATING};
 	p->tt[2][2] = (t_ts){n.time_to_sleep * 1e3, SLEEPING};
 }
@@ -150,27 +155,61 @@ t_phi	*mk_phis(t_args n)
 	t_phi	*p;
 	t_mutex	*forks;
 	t_mutex	*write;
+	t_mutex *death;
 	int	i;
 
-	p = malloc(sizeof(t_phi) * n.philos);
+	p = ft_calloc(n.philos + 1, sizeof(t_phi));
 	if (p == NULL)
 		return (NULL);
 	forks = mk_forks(p, n);
-	write = malloc(sizeof(t_mutex) * 1);
+	if (forks == NULL)
+		return (NULL);
+	write = ft_calloc(1, sizeof(t_mutex));
 	if (write == NULL)
 		return (NULL);
+	death = ft_calloc(1, sizeof(t_mutex));
+	if (death == NULL)
+		return (NULL);
 	pthread_mutex_init(write, NULL);
+	pthread_mutex_init(death, NULL);
 	i = -1;
 	while (++i < n.philos)
 	{
 		p[i].forks = forks;
 		p[i].write = write;
+		p[i].death = death;
 		populate_tt(&p[i], n);
 		p[i].id = i;
 		p[i].n = n;
 	}
 	print_tt(p);
 	return (p);
+}
+
+void	del_mutexes(t_phi *p)
+{
+	int		i;
+	t_mutex	*fork;
+
+	i = -1;
+	while (++i < p->n.philos)
+	{
+		fork = &p->forks[i];
+		pthread_mutex_destroy(fork);
+	}
+	free(p->forks);
+	pthread_mutex_destroy(p->write);
+	free(p->write);
+	pthread_mutex_destroy(p->death);
+	free(p->death);
+	return ;
+}
+
+void	del_phis(t_phi *p)
+{
+	del_mutexes(p);
+	free(p);
+	return ;
 }
 
 void	print_philos(t_phi *p)

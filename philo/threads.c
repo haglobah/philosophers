@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 11:39:19 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 12:41:50 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 16:51:39 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,24 @@ t_time get_µs(t_time start)
 	return (get_ts() - start);
 }
 
-void	printp(t_time start, t_phi *p, char *s)
+bool	should_die(t_phi *p, t_ps *ps)
+{
+	if (get_µs(ps->start) - ps->ate_last_time >= p->n.time_to_die * 1000)
+		return (true);
+	return (false);
+}
+
+void	printp(t_phi *p, t_ps *ps, char *s)
 {
 	pthread_mutex_lock(p->write);
-	printf("%lli %i %s\n", get_µs(start) / 1000, p->id, s);
-	fflush(stdout);
+	if (should_die(p, ps))
+	{
+		printf("%lli %i died\n", get_µs(ps->start) / 1000, p->id);
+		// kill_all_processes();
+		// pthread_mutex_unlock(p->write);
+		return ;
+	}
+	printf("%lli %i %s\n", get_µs(ps->start) / 1000, p->id, s);
 	pthread_mutex_unlock(p->write);
 }
 
@@ -66,7 +79,7 @@ void	place_forks(t_phi *p)
 	unlock(p, right);
 }
 
-void	acquire_forks(t_phi *p, t_time start)
+void	acquire_forks(t_phi *p, t_ps *ps)
 {
 	int	left;
 	int	right;
@@ -74,31 +87,31 @@ void	acquire_forks(t_phi *p, t_time start)
 	left = p->id;
 	right = (p->id == 0) ? p->n.philos - 1 : p->id - 1;
 	lock(p, right);
-	printp(start, p, "has taken a fork");
+	printp(p, ps, "has taken a fork");
 	lock(p, left);
-	printp(start, p, "has taken a fork");
+	printp(p, ps, "has taken a fork");
 }
 
-int	transition(t_phi *p, int *state, t_time start, int curr_slot)
+int	transition(t_phi *p, t_ps *ps)
 {
-	if (*state == EATING)
+	if (ps->state == EATING)
 	{
 		place_forks(p);
-		*state = SLEEPING;
-		printp(start, p, "is sleeping");
+		ps->state = SLEEPING;
+		printp(p, ps, "is sleeping");
 	}
-	else if (*state == SLEEPING)
+	else if (ps->state == SLEEPING)
 	{
-		*state = THINKING;
-		printp(start, p, "is thinking");
+		ps->state = THINKING;
+		printp(p, ps, "is thinking");
 	}
-	else if (*state == THINKING)
+	else if (ps->state == THINKING)
 	{
-		acquire_forks(p, start);
-		*state = EATING;
-		printp(start, p, "is eating");
+		acquire_forks(p, ps);
+		ps->state = EATING;
+		printp(p, ps, "is eating");
 	}
-	return (curr_slot < 2 ? curr_slot + 1 : 0);
+	return (ps->curr_slot < 2 ? ps->curr_slot + 1 : 0);
 }
 
 int	get_idm(t_phi *p)
@@ -128,12 +141,12 @@ t_time	get_tasklen(t_phi *p, int slot)
 	return (p->tt[get_idm(p)][slot].dur);
 }
 
-bool	switch_needed(t_phi *p, t_time last_switch, t_time start, int curr_slot)
+bool	switch_needed(t_phi *p, t_ps *ps)
 {
 	t_time	tasklen;
 
-	tasklen = get_tasklen(p, curr_slot);
-	if (get_µs(start) - last_switch >= tasklen)
+	tasklen = get_tasklen(p, ps->curr_slot);
+	if (get_µs(ps->start) - ps->last_switch >= tasklen)
 		return (true);
 	else
 		return (false);
@@ -147,57 +160,45 @@ void	sleep_until_next_switch(t_phi *p, int state, int curr_slot)
 	usleep(get_dur(p, p->id, curr_slot) - 500);
 }
 
-bool	times_ate_reached(t_phi *p, t_time start, int times_ate)
+bool	times_ate_reached(t_phi *p, t_ps *ps)
 {
-	if (!(times_ate == p->n.times_must_eat))
+	if (!(ps->times_ate == p->n.times_must_eat))
 		return (false);
-	printp(start, p, "ate times:");
-	printf("   %i\n", times_ate);
+	printp(p, ps, "ate times:");
+	printf("   %i\n", ps->times_ate);
 	return (true);
-}
-
-bool	check_death(t_phi *p, t_time start, t_time ate_last_time)
-{
-	if (get_µs(start) - ate_last_time >= p->n.time_to_die * 1000)
-		return (true);
-	return (false);
 }
 
 void	go(t_phi *p)
 {
-	t_time	start;
-	int	state;
-	int	curr_slot;
-	int	times_ate;
-	t_time	last_switch;
-	t_time	ate_last_time;
+	t_ps	ps;
 
-	start = get_ts();
-	state = get_status(p, 2);
-	curr_slot = transition(p, &state, start, 2);
-	last_switch = 0;
-	ate_last_time = 0;
-	times_ate = 0;
+	ps = (t_ps){};
+	ps.start = get_ts();
+	ps.state = get_status(p, 2);
+	ps.curr_slot = 2;
+	ps.curr_slot = transition(p, &ps);
+	ps.last_switch = 0;
+	ps.ate_last_time = 0;
+	ps.times_ate = 0;
 	while (true)
 	{
-		if (check_death(p, start, ate_last_time))
-			return (printp(start, p, "died"));
-		if (switch_needed(p, last_switch, start, curr_slot))
+		if (switch_needed(p, &ps))
 		{
-			curr_slot = transition(p, &state, start, curr_slot);
-			last_switch = get_µs(start);
-			if (state == SLEEPING)
+			ps.curr_slot = transition(p, &ps);
+			ps.last_switch = get_µs(ps.start);
+			if (ps.state == SLEEPING)
 			{
-				times_ate++;
-				ate_last_time = get_µs(start);
+				ps.times_ate++;
+				ps.ate_last_time = get_µs(ps.start);
 			}
 			//sleep_until_next_switch(p, state, curr_slot);
 			/* printp(ate_last_time, p, "ate_last_time"); */
 		}
-		//usleep(1);
-		//busy_sleep?
-		if (times_ate_reached(p, start, times_ate))
+		if (times_ate_reached(p, &ps))
+		{
 			return ;
+		}
 	}
 	return ;
 }
@@ -207,7 +208,7 @@ void	*run_philos(t_phi *p)
 	pthread_t	*t;
 	int	i;
 
-	t = malloc(sizeof(pthread_t) * p->n.philos);
+	t = ft_calloc(p->n.philos, sizeof(pthread_t));
 	if (t == NULL)
 		return (rerror("thread_arr creation failed.\n"));
 	i = -1;
@@ -216,10 +217,10 @@ void	*run_philos(t_phi *p)
 		if (pthread_create(&t[i], NULL, (void *)go, &p[i]) != 0)
 			return (rerror("thread creation failed.\n"));
 	}
-	while (--i > 0)
+	while (--i >= 0)
 	{
-		if (pthread_join(t[i], NULL) != 0)
-			return (rerror("thread join failed"));
+		if (pthread_join(t[i], NULL) == 0)
+			printf("thread %i joined.\n", i);
 	}
 	free(t);
 	return (NULL);

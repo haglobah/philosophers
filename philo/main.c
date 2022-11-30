@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bhagenlo <bhagenlo@student.42heil...>      +#+  +:+       +#+        */
+/*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 10:26:38 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/16 10:26:38 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 16:45:15 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,6 @@ int	main(int argc, char *argv[])
 
 	p = parse(argc, argv);
 	run_philos(p);
-//	free_n_destroy(p);
+	del_phis(p);
 	return (0);
 }

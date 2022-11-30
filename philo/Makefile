@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bhagenlo <bhagenlo@student.42heil...>      +#+  +:+       +#+         #
+#    By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/16 20:51:59 by bhagenlo          #+#    #+#              #
-#    Updated: 2022/11/16 20:51:59 by bhagenlo         ###   ########.fr        #
+#    Updated: 2022/11/30 15:16:17 by bhagenlo         ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME := philo
 
@@ -21,7 +21,7 @@ TOBJS := $(TESTS:.c=.o)
 TEST := $(NAME)_test
 
 CC := cc
-CFLAGS := -Wall -Wextra # -Werror # -I../LeakSanitizer/include -L../LeakSanitizer -llsan -lc++
+CFLAGS := -Wall -Wextra -Werror -I../../LeakSanitizer/include -L../../LeakSanitizer -llsan -lc++
 
 RM := rm -rf
 
@@ -45,7 +45,6 @@ run : all
 lsan : CFLAGS = -I../LeakSanitizer/include -L../LeakSanitizer -llsan -lc++
 lsan :
 	$(MAKE) all
-	./$(NAME)
 
 test : $(TESTS) $(SRCS)
 	$(CC) $(TESTS) $(SRCS) $(LINK_FLAGS) -o $(TEST)
