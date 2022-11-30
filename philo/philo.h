@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 17:16:04 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 19:12:42 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:08:36 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,18 @@ typedef struct s_philo_state
 	bool	died;
 }	t_ps;
 
+typedef struct s_global_stuff
+{
+	t_mutex	*forks;
+	t_mutex	*write;
+	t_mutex	*death;
+	bool	*has_died;
+}	t_glob;
+
 typedef struct s_philo_struct
 {
 	int		id;
+	t_glob	*g;
 	t_mutex	*forks;
 	t_mutex	*write;
 	t_mutex	*death;
@@ -81,12 +90,8 @@ typedef struct s_philo_struct
 t_phi	*mk_phis(t_args n);
 void	del_phis(t_phi *p);
 t_mutex	*mk_forks(t_phi *p, t_args n);
-void	populate_even(t_phi *p, t_args n);
-void	populate_odd(t_phi *p, t_args n);
 int		get_dur(t_phi *p, int philo, int slot);
 int		get_st(t_phi *p, int philo, int slot);
-void	print_tt(t_phi *p);
-void	populate_timetable(t_phi *p, t_args n);
 
 t_phi	*parse(int argc, char *argv[]);
 bool	parse_num3(const char *s, int *loc, bool is_num_philos);
@@ -101,8 +106,14 @@ void	print_philos(t_phi *p);
 
 //time.c
 t_time	utc(t_tv time);
-t_time	get_ts();
+t_time	get_ts(void);
 t_time	get_us(t_time start);
+
+//timetable.c
+void	populate_even(t_phi *p, t_args n);
+void	populate_odd(t_phi *p, t_args n);
+void	print_tt(t_phi *p);
+void	populate_tt(t_phi *p, t_args n);
 
 int		ft_strlen(char *s);
 void	run_tests(void);

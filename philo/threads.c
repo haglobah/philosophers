@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 11:39:19 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 19:11:42 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 19:56:39 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,14 +155,6 @@ bool	switch_needed(t_phi *p, t_ps *ps)
 		return (true);
 	else
 		return (false);
-}
-
-void	sleep_until_next_switch(t_phi *p, int state, int curr_slot)
-{
-	if (p->n.philos % 2 == 0 && state == THINKING)
-		return ;
-	printf("%u: ", get_dur(p, p->id, curr_slot));
-	usleep(get_dur(p, p->id, curr_slot) - 500);
 }
 
 bool	times_ate_reached(t_phi *p, t_ps *ps)

@@ -3,28 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bhagenlo <bhagenlo@student.42heil...>      +#+  +:+       +#+        */
+/*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 23:44:56 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/16 23:44:56 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:09:46 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <stdarg.h>
 
-char **mk_stra(int argc, ...)
+char	**mk_stra(int argc, ...)
 {
 	va_list	argp;
 	int		i;
-	char		**res;
+	char	**res;
 
 	res = calloc(sizeof(char *), argc);
 	if (res == NULL)
 		return (NULL);
 	va_start(argp, argc);
 	i = 0;
-	while(i < argc)
+	while (i < argc)
 	{
 		char *str_to_add = va_arg(argp, char *);
 		res[i] = calloc(sizeof(char), ft_strlen(str_to_add) + 1);
