@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/30 20:32:04 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:33:07 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:54:27 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,5 @@ bool	times_ate_reached(t_phi *p, t_ps *ps)
 {
 	if (!(ps->times_ate == p->n.times_must_eat))
 		return (false);
-	printp(p, ps, "ate times:");
-	printf("   %i\n", ps->times_ate);
 	return (true);
 }

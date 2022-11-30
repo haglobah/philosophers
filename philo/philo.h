@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 17:16:04 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:46:12 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 21:04:55 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ int		handle_death(t_phi *p, t_ps ps);
 
 //forks.c
 void	place_forks(t_phi *p);
-void	acquire_forks(t_phi *p, t_ps *ps);
+bool	acquire_forks(t_phi *p, t_ps *ps);
 
 //time.c
 t_time	utc(t_tv time);

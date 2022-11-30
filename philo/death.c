@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/30 20:13:06 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:34:56 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:53:44 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	announce_death(t_phi *p, t_ps *ps)
 	pthread_mutex_lock(p->write);
 	if (!is_sb_dead(p))
 	{
-		printf("%lli %i has died\n", get_us(ps->start) / 1000, p->id);
+		printf("%lli %i died\n", get_us(ps->start) / 1000, p->id);
 	}
 	*p->has_died = true;
 	pthread_mutex_unlock(p->write);

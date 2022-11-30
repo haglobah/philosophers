@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 11:39:19 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:36:32 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 21:05:48 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ bool	transition(t_phi *p, t_ps *ps)
 	}
 	else if (ps->state == THINKING)
 	{
-		acquire_forks(p, ps);
+		if (acquire_forks(p, ps) == true)
+			return (true);
 		ps->state = EATING;
 		if (should_die(p, ps))
 		{
@@ -89,7 +90,6 @@ void	*run_philos(t_phi *p)
 	{
 		if (pthread_join(t[i], &has_died) == 0)
 		{
-			printf("thread %i joined.\n", i);
 			if (((int)(intptr_t)has_died) == true)
 				break ;
 		}

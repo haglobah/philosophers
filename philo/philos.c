@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 23:54:44 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:07:07 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:55:15 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ t_phi	*mk_phis(t_args n)
 		cons_philo(p, g, n, i);
 	}
 	free(g);
-	print_tt(p);
 	return (p);
 }
 

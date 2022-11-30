@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/30 20:15:04 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 20:38:44 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 21:05:11 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	place_forks(t_phi *p)
 	unlock(p, right);
 }
 
-void	acquire_forks(t_phi *p, t_ps *ps)
+bool	acquire_forks(t_phi *p, t_ps *ps)
 {
 	int	left;
 	int	right;
@@ -42,6 +42,15 @@ void	acquire_forks(t_phi *p, t_ps *ps)
 	right = (p->id == 0) * (p->n.philos - 1) + (!(p->id == 0)) * (p->id - 1);
 	lock(p, right);
 	printp(p, ps, "has taken a fork");
+	if (p->n.philos == 1)
+	{
+		while (true)
+		{
+			if (should_die(p, ps))
+				return ((bool)handle_death(p, *ps));
+		}
+	}
 	lock(p, left);
 	printp(p, ps, "has taken a fork");
+	return (false);
 }
