@@ -6,7 +6,7 @@
 #    By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/16 20:51:59 by bhagenlo          #+#    #+#              #
-#    Updated: 2022/11/30 20:52:37 by bhagenlo         ###   ########.fr        #
+#    Updated: 2022/11/30 21:19:21 by bhagenlo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ TOBJS := $(TESTS:.c=.o)
 TEST := $(NAME)_test
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror -I../../LeakSanitizer/include -L../../LeakSanitizer -llsan -lc++
+CFLAGS := -Wall -Wextra -Werror # -I../../LeakSanitizer/include -L../../LeakSanitizer -llsan -lc++
 
 RM := rm -rf
 
