@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bhagenlo <bhagenlo@student.42heil...>      +#+  +:+       +#+        */
+/*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 11:39:19 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/17 11:39:19 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 12:41:50 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	printp(t_time start, t_phi *p, char *s)
 {
 	pthread_mutex_lock(p->write);
 	printf("%lli %i %s\n", get_µs(start) / 1000, p->id, s);
+	fflush(stdout);
 	pthread_mutex_unlock(p->write);
 }
 
@@ -138,7 +139,22 @@ bool	switch_needed(t_phi *p, t_time last_switch, t_time start, int curr_slot)
 		return (false);
 }
 
-bool	times_ate_reached();
+void	sleep_until_next_switch(t_phi *p, int state, int curr_slot)
+{
+	if (p->n.philos % 2 == 0 && state == THINKING)
+		return ;
+	printf("%u: ", get_dur(p, p->id, curr_slot));
+	usleep(get_dur(p, p->id, curr_slot) - 500);
+}
+
+bool	times_ate_reached(t_phi *p, t_time start, int times_ate)
+{
+	if (!(times_ate == p->n.times_must_eat))
+		return (false);
+	printp(start, p, "ate times:");
+	printf("   %i\n", times_ate);
+	return (true);
+}
 
 bool	check_death(t_phi *p, t_time start, t_time ate_last_time)
 {
@@ -152,6 +168,7 @@ void	go(t_phi *p)
 	t_time	start;
 	int	state;
 	int	curr_slot;
+	int	times_ate;
 	t_time	last_switch;
 	t_time	ate_last_time;
 
@@ -160,6 +177,7 @@ void	go(t_phi *p)
 	curr_slot = transition(p, &state, start, 2);
 	last_switch = 0;
 	ate_last_time = 0;
+	times_ate = 0;
 	while (true)
 	{
 		if (check_death(p, start, ate_last_time))
@@ -169,15 +187,17 @@ void	go(t_phi *p)
 			curr_slot = transition(p, &state, start, curr_slot);
 			last_switch = get_µs(start);
 			if (state == SLEEPING)
+			{
+				times_ate++;
 				ate_last_time = get_µs(start);
+			}
+			//sleep_until_next_switch(p, state, curr_slot);
 			/* printp(ate_last_time, p, "ate_last_time"); */
 		}
+		//usleep(1);
 		//busy_sleep?
-		/* if (times_ate_reached()) */
-		/* { */
-			
-		/* 	return ; */
-		/* } */
+		if (times_ate_reached(p, start, times_ate))
+			return ;
 	}
 	return ;
 }
