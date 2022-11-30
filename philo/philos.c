@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 23:54:44 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 16:49:08 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 19:01:10 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,39 +17,6 @@ void	*free_n_destroy(t_phi *p)
 	del_phis(p);
 	return (rerror("Allocation of a fork failed.\n"));
 }
-
-/* t_pdata	*mk_philo(t_phi *p, int id) */
-/* { */
-/* 	t_pdata	*phi; */
-
-/* 	phi = malloc(sizeof(t_pdata) * 1); */
-/* 	if (phi == NULL) */
-/* 		return (NULL); */
-/* 	phi->id = id; */
-/* 	/\* phi->ts = p->tt*\/; */
-/* 	phi->forks = p->forks; */
-/* 	phi->n = &p->n; */
-/* 	return (phi); */
-/* } */
-
-/* t_pdata	**mk_philos(t_phi *p, t_args n) */
-/* { */
-/* 	t_pdata	**philos; */
-/* 	int	i; */
-
-/* 	i = -1; */
-/* 	philos = malloc(sizeof(t_pdata *) * n.philos); */
-/* 	if (philos == NULL) */
-/* 		return (rerror("Allocation of philos failed.")); */
-/* 	while (++i < n.philos) */
-/* 	{ */
-/* 		philos[i] = mk_philo(p, i); */
-/* 		printf("i: %i, id: %i\n", i, philos[i]->id); */
-/* 		if (philos[i] == NULL) */
-/* 			return (free_n_destroy(p, PHILOS, i)); */
-/* 	} */
-/* 	return (philos); */
-/* } */
 
 pthread_mutex_t	*mk_forks(t_phi *p, t_args n)
 {
@@ -156,6 +123,7 @@ t_phi	*mk_phis(t_args n)
 	t_mutex	*forks;
 	t_mutex	*write;
 	t_mutex *death;
+	bool	*has_died;
 	int	i;
 
 	p = ft_calloc(n.philos + 1, sizeof(t_phi));
@@ -170,6 +138,10 @@ t_phi	*mk_phis(t_args n)
 	death = ft_calloc(1, sizeof(t_mutex));
 	if (death == NULL)
 		return (NULL);
+	has_died = ft_calloc(1, sizeof(bool));
+	if (has_died == NULL)
+		return (NULL);
+	*has_died = false;
 	pthread_mutex_init(write, NULL);
 	pthread_mutex_init(death, NULL);
 	i = -1;
@@ -178,6 +150,7 @@ t_phi	*mk_phis(t_args n)
 		p[i].forks = forks;
 		p[i].write = write;
 		p[i].death = death;
+		p[i].has_died = has_died;
 		populate_tt(&p[i], n);
 		p[i].id = i;
 		p[i].n = n;
@@ -202,6 +175,7 @@ void	del_mutexes(t_phi *p)
 	free(p->write);
 	pthread_mutex_destroy(p->death);
 	free(p->death);
+	free(p->has_died);
 	return ;
 }
 

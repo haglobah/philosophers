@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 17:29:03 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 15:26:20 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 19:09:10 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ bool	ft_isdigit(char c)
 
 bool	ft_parse_int(const char *s, int *loc)
 {
-	int	i;
-	long long		num;
-	int				neg;
+	int			i;
+	long long	num;
+	int			neg;
 
 	num = 0;
 	i = 0;
@@ -104,7 +104,6 @@ void	*rerrorm(char *msg)
 {
 	printe(msg);
 	printe("The correct usage is: \n");
-	printe("    ./philo #philos die_time eat_time sleep_time [times_must_eat]\n\n");
+	printe("    ./philo #philos die_time eat_time sleep_time [#must_eat]\n\n");
 	return (NULL);
 }
-

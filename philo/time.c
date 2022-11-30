@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/16 10:26:38 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 19:04:06 by bhagenlo         ###   ########.fr       */
+/*   Created: 2022/11/30 19:11:08 by bhagenlo          #+#    #+#             */
+/*   Updated: 2022/11/30 19:14:15 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char *argv[])
+t_time	utc(t_tv time)
 {
-	t_phi	*p;
+	return (time.tv_sec * 1e6 + time.tv_usec);
+}
 
-	p = parse(argc, argv);
-	run_philos(p);
-	del_phis(p);
-	return (0);
+t_time	get_ts(void)
+{
+	t_tv	now;
+
+	gettimeofday(&now, NULL);
+	return (utc(now));
+}
+
+t_time	get_us(t_time start)
+{
+	return (get_ts() - start);
 }

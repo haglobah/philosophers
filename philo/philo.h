@@ -6,7 +6,7 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 17:16:04 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 16:48:25 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 19:12:42 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@
 # define TIMES_ATE_REACHED 10
 
 typedef struct timeval	t_tv;
-typedef long long t_time;
-typedef pthread_mutex_t t_mutex;
+typedef long long		t_time;
+typedef pthread_mutex_t	t_mutex;
 
 typedef struct s_arguments
 {
@@ -53,27 +53,8 @@ typedef struct s_arguments
 typedef struct s_time_status
 {
 	t_time	dur;
-	int	status;
-	/* char	stat[5]; */
+	int		status;
 }	t_ts;
-
-/* typedef struct s_philorow */
-/* { */
-/* 	t_time_status	*ts; */
-/* }	t_philorow; */
-
-/* typedef struct s_timetable */
-/* { */
-/* 	t_ts	bla[3]; */
-/* }	t_tt; */
-
-/* typedef struct s_philosopher_init_data */
-/* { */
-/* 	int	id; */
-/* 	t_ts	**tt; */
-/* 	pthread_mutex_t	*forks; */
-/* 	t_args	*n; */
-/* } t_pdata; */
 
 typedef struct s_philo_state
 {
@@ -83,21 +64,23 @@ typedef struct s_philo_state
 	int		state;
 	int		curr_slot;
 	int		times_ate;
+	bool	died;
 }	t_ps;
 
 typedef struct s_philo_struct
 {
-	int	id;
+	int		id;
 	t_mutex	*forks;
 	t_mutex	*write;
 	t_mutex	*death;
+	bool	*has_died;
 	t_ts	tt[3][3];
 	t_args	n;
 }	t_phi;
 
 t_phi	*mk_phis(t_args n);
 void	del_phis(t_phi *p);
-pthread_mutex_t	*mk_forks(t_phi *p, t_args n);
+t_mutex	*mk_forks(t_phi *p, t_args n);
 void	populate_even(t_phi *p, t_args n);
 void	populate_odd(t_phi *p, t_args n);
 int		get_dur(t_phi *p, int philo, int slot);
@@ -115,6 +98,11 @@ void	*rerrorm(char *msg);
 
 void	*run_philos(t_phi *p);
 void	print_philos(t_phi *p);
+
+//time.c
+t_time	utc(t_tv time);
+t_time	get_ts();
+t_time	get_us(t_time start);
 
 int		ft_strlen(char *s);
 void	run_tests(void);

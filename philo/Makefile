@@ -6,13 +6,13 @@
 #    By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/16 20:51:59 by bhagenlo          #+#    #+#              #
-#    Updated: 2022/11/30 15:16:17 by bhagenlo         ###   ########.fr        #
+#    Updated: 2022/11/30 19:12:58 by bhagenlo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := philo
 
-SRCS := philos.c utils.c threads.c
+SRCS := philos.c utils.c threads.c time.c
 MAIN := main.c
 OBJS := $(SRCS:.c=.o)
 MO := main.o

@@ -6,56 +6,55 @@
 /*   By: bhagenlo <bhagenlo@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 11:39:19 by bhagenlo          #+#    #+#             */
-/*   Updated: 2022/11/30 16:51:39 by bhagenlo         ###   ########.fr       */
+/*   Updated: 2022/11/30 19:11:42 by bhagenlo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_time	utc(t_tv time)
+bool is_sb_dead(t_phi *p)
 {
-	return (time.tv_sec * 1e6 + time.tv_usec);
-}
+	bool result;
 
-t_time	µs_difference(t_tv start, t_tv now)
-{
-	return (( now.tv_sec - start.tv_sec) * 1e6
-			+ now.tv_usec - start.tv_usec);
-}
-
-t_time get_ts()
-{
-	t_tv	now;
-
-	gettimeofday(&now, NULL);
-	return (utc(now));
-}
-
-t_time get_µs(t_time start)
-{
-	return (get_ts() - start);
-}
-
-bool	should_die(t_phi *p, t_ps *ps)
-{
-	if (get_µs(ps->start) - ps->ate_last_time >= p->n.time_to_die * 1000)
-		return (true);
-	return (false);
+	result = false;
+	pthread_mutex_lock(p->death);
+	if (*p->has_died)
+		result = true;
+	pthread_mutex_unlock(p->death);
+	return (result);
 }
 
 void	printp(t_phi *p, t_ps *ps, char *s)
 {
 	pthread_mutex_lock(p->write);
-	if (should_die(p, ps))
+	if (!is_sb_dead(p))
 	{
-		printf("%lli %i died\n", get_µs(ps->start) / 1000, p->id);
-		// kill_all_processes();
-		// pthread_mutex_unlock(p->write);
-		return ;
+		printf("%lli %i %s\n", get_us(ps->start) / 1000, p->id, s);
 	}
-	printf("%lli %i %s\n", get_µs(ps->start) / 1000, p->id, s);
 	pthread_mutex_unlock(p->write);
 }
+
+void	announce_death(t_phi *p, t_ps *ps)
+{
+	pthread_mutex_lock(p->write);
+	if (!is_sb_dead(p))
+	{
+		printf("%lli %i has died\n", get_us(ps->start) / 1000, p->id);
+	}
+	*p->has_died = true;
+	pthread_mutex_unlock(p->write);
+}
+
+bool	should_die(t_phi *p, t_ps *ps)
+{
+	return (is_sb_dead(p) || (get_us(ps->start) - ps->ate_last_time >= p->n.time_to_die * 1000));
+}
+
+void	handle_death(t_phi *p, t_ps ps)
+{
+	announce_death(p, &ps);
+}
+
 
 void	unlock(t_phi *p, int fork_id)
 {
@@ -92,7 +91,7 @@ void	acquire_forks(t_phi *p, t_ps *ps)
 	printp(p, ps, "has taken a fork");
 }
 
-int	transition(t_phi *p, t_ps *ps)
+bool	transition(t_phi *p, t_ps *ps)
 {
 	if (ps->state == EATING)
 	{
@@ -109,9 +108,15 @@ int	transition(t_phi *p, t_ps *ps)
 	{
 		acquire_forks(p, ps);
 		ps->state = EATING;
+		if (should_die(p, ps))
+		{
+			handle_death(p, *ps);
+			return (true);
+		}
 		printp(p, ps, "is eating");
 	}
-	return (ps->curr_slot < 2 ? ps->curr_slot + 1 : 0);
+	ps->curr_slot = (ps->curr_slot < 2 ? ps->curr_slot + 1 : 0);
+	return (false);
 }
 
 int	get_idm(t_phi *p)
@@ -146,7 +151,7 @@ bool	switch_needed(t_phi *p, t_ps *ps)
 	t_time	tasklen;
 
 	tasklen = get_tasklen(p, ps->curr_slot);
-	if (get_µs(ps->start) - ps->last_switch >= tasklen)
+	if (get_us(ps->start) - ps->last_switch >= tasklen)
 		return (true);
 	else
 		return (false);
@@ -169,7 +174,7 @@ bool	times_ate_reached(t_phi *p, t_ps *ps)
 	return (true);
 }
 
-void	go(t_phi *p)
+int	go(t_phi *p)
 {
 	t_ps	ps;
 
@@ -183,31 +188,39 @@ void	go(t_phi *p)
 	ps.times_ate = 0;
 	while (true)
 	{
+		if (should_die(p, &ps))
+		{
+			handle_death(p, ps);
+			// pthread_mutex_unlock(p->write);
+			return (1);
+		}
 		if (switch_needed(p, &ps))
 		{
-			ps.curr_slot = transition(p, &ps);
-			ps.last_switch = get_µs(ps.start);
+			ps.died = transition(p, &ps);
+			if (ps.died)
+				return (1);
+			ps.last_switch = get_us(ps.start);
 			if (ps.state == SLEEPING)
 			{
 				ps.times_ate++;
-				ps.ate_last_time = get_µs(ps.start);
+				ps.ate_last_time = get_us(ps.start);
 			}
 			//sleep_until_next_switch(p, state, curr_slot);
 			/* printp(ate_last_time, p, "ate_last_time"); */
 		}
 		if (times_ate_reached(p, &ps))
-		{
-			return ;
-		}
+			return (0);
 	}
-	return ;
+	return (0);
 }
 
 void	*run_philos(t_phi *p)
 {
 	pthread_t	*t;
+	void	*has_died;
 	int	i;
 
+	has_died = NULL;
 	t = ft_calloc(p->n.philos, sizeof(pthread_t));
 	if (t == NULL)
 		return (rerror("thread_arr creation failed.\n"));
@@ -219,8 +232,15 @@ void	*run_philos(t_phi *p)
 	}
 	while (--i >= 0)
 	{
-		if (pthread_join(t[i], NULL) == 0)
+		if (pthread_join(t[i], &has_died) == 0)
+		{
 			printf("thread %i joined.\n", i);
+			if (((int) (intptr_t) has_died) == true)
+			{
+				printf("thread %i died.\n", i);
+				break ;
+			}
+		}
 	}
 	free(t);
 	return (NULL);
